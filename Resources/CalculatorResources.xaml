@@ -1,0 +1,165 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+					xmlns:calc="clr-namespace:CalcLib;assembly=CalcLib"
+					xmlns:inf="clr-namespace:Infrastructure;assembly=Infrastructure">
+
+	<SolidColorBrush Color="#CCCCCC" x:Key="commonLightGrayBrush"/>
+	<SolidColorBrush Color="#999999" x:Key="commonMediumGrayBrush"/>
+	<SolidColorBrush Color="#4D4D4D" x:Key="commonDarkGrayBrush"/>
+	
+	<Style TargetType="{x:Type inf:ColorButton}" x:Shared="False" >
+		<Setter Property="Margin" Value="5"/>
+		<Setter Property="Foreground" Value="White"/>
+		<Setter Property="FontWeight" Value="Bold"/>
+		<Setter Property="FontSize" Value="20"/>
+		<Setter Property="HorizontalContentAlignment" Value="Center"/>
+		<Setter Property="VerticalContentAlignment" Value="Center"/>
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate>
+					<Grid>
+						<Border CornerRadius="5" BorderThickness="1" Padding="5" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}"
+								x:Name="bdrMain">
+							<Border.BorderBrush>
+								<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+									<GradientStop Offset="0" Color="LightGray"/>
+									<GradientStop Offset="1" Color="Black"/>
+								</LinearGradientBrush>
+							</Border.BorderBrush>
+							<Border.Background>
+								<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+									<GradientStop Offset="0" Color="White"/>
+									<GradientStop Offset="0.05" Color="#FF5C5C5C"/>
+									<GradientStop Offset="0.65" Color="#FF2E2E2E"/>
+								</LinearGradientBrush>
+							</Border.Background>
+							<Border.Effect>
+								<DropShadowEffect Direction="320" Color="Black" BlurRadius="5" Opacity=".75" RenderingBias="Performance"
+												  ShadowDepth="2"/>
+							</Border.Effect>
+							<Grid>
+								<TextBlock Grid.Column="0" Foreground="White" FontSize="{TemplateBinding FontSize}" Text="{TemplateBinding Button.Content}" x:Name="txtContent"
+										   VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,2,5,2" FontWeight="Bold"/>
+							</Grid>
+						</Border>
+						<Grid Background="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="grdMask" Opacity=".3"/>
+					</Grid>
+					<ControlTemplate.Triggers>
+						<Trigger Property="Button.IsMouseOver" Value="True">
+							<Setter TargetName="txtContent" Property="Foreground" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent},Path=MouseOverForeground}"/>
+						</Trigger>
+						<Trigger Property="Button.IsPressed" Value="True">
+							<Setter TargetName="bdrMain" Property="Effect" Value="{x:Null}"/>
+							<Setter Property="Margin" Value="3,3,1,1"/>
+						</Trigger>
+
+						<Trigger Property="Button.IsEnabled" Value="False">
+							<Setter TargetName="bdrMain" Property="Effect" Value="{x:Null}"/>
+							<Setter TargetName="grdMask" Property="Visibility" Value="Visible"/>
+						</Trigger>
+
+						<Trigger Property="Button.IsEnabled" Value="True">
+							<Setter TargetName="grdMask" Property="Visibility" Value="Collapsed"/>
+						</Trigger>
+
+						<EventTrigger RoutedEvent="inf:ColorButton.CommandExecuted">
+							<BeginStoryboard>
+								<Storyboard Storyboard.TargetName="txtContent" Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)">
+									<ColorAnimation From="White" To="YellowGreen" Duration="0:0:0.2" AutoReverse="True"/>
+								</Storyboard>
+							</BeginStoryboard>
+							<BeginStoryboard>
+								<Storyboard Storyboard.TargetProperty="Margin">
+									<ThicknessAnimation To="5,5,1,1"  Duration="0:0:0.1" AutoReverse="True"/>
+								</Storyboard>
+							</BeginStoryboard>
+						</EventTrigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<DataTemplate DataType="{x:Type calc:CalculatorInput}">
+		<inf:ColorButton Content="{Binding Value}" Command="{Binding InputExecutedCommand}" 
+				FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MouseOverForeground="YellowGreen"/>
+	</DataTemplate>
+	
+	<DataTemplate DataType="{x:Type calc:Calculator}">
+		<Grid>
+			<Grid.Background>
+				<ImageBrush ImageSource="/Resources/Images/BrushMetal.jpg" Stretch="Fill" TileMode="Tile"/>
+			</Grid.Background>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition/>
+			</Grid.RowDefinitions>
+
+			<Border Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Top" TextBlock.TextAlignment="Right" BorderBrush="{StaticResource commonDarkGrayBrush}"
+					BorderThickness="1" CornerRadius="5" Margin="5" Height="75">
+				<Border.Background>
+					<SolidColorBrush Color="White" Opacity=".5"/>
+				</Border.Background>
+				<Grid Margin="5">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="Auto"/>
+					</Grid.RowDefinitions>
+
+					<TextBlock Grid.Row="0" Text="{Binding Input,  UpdateSourceTrigger=PropertyChanged}" FontSize="20"/>
+					<TextBlock Grid.Row="1" Text="{Binding Result,  UpdateSourceTrigger=PropertyChanged}" FontWeight="Bold" FontSize="30"/>
+				</Grid>
+			</Border>
+
+			<Grid Grid.Row="2">
+				<Grid.RowDefinitions>
+					<RowDefinition/>
+					<RowDefinition/>
+					<RowDefinition/>
+					<RowDefinition/>
+					<RowDefinition/>
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition/>
+					<ColumnDefinition/>
+					<ColumnDefinition/>
+					<ColumnDefinition/>
+				</Grid.ColumnDefinitions>
+
+				<inf:ColorButton Grid.Row="0" Grid.Column="2" Content="CE" HorizontalContentAlignment="Center" Command="{Binding ClearEntryCommand}" Focusable="False"
+					Height="30" VerticalAlignment="Bottom" MouseOverForeground="Orange" FontSize="14"/>
+				<inf:ColorButton Grid.Row="0" Grid.Column="3" Content="C" HorizontalContentAlignment="Center" Command="{Binding ClearCommand}" Focusable="False"
+					Height="30" VerticalAlignment="Bottom" MouseOverForeground="Red" FontSize="14"/>
+
+
+				<ContentControl Grid.Row="1" Grid.Column="0" Content="{Binding InputButtons[0]}"/>
+				<ContentControl Grid.Row="1" Grid.Column="1" Content="{Binding InputButtons[1]}"/>
+				<ContentControl Grid.Row="1" Grid.Column="2" Content="{Binding InputButtons[2]}"/>
+				<ContentControl Grid.Row="2" Grid.Column="0" Content="{Binding InputButtons[3]}"/>
+				<ContentControl Grid.Row="2" Grid.Column="1" Content="{Binding InputButtons[4]}"/>
+				<ContentControl Grid.Row="2" Grid.Column="2" Content="{Binding InputButtons[5]}"/>
+				<ContentControl Grid.Row="3" Grid.Column="0" Content="{Binding InputButtons[6]}"/>
+				<ContentControl Grid.Row="3" Grid.Column="1" Content="{Binding InputButtons[7]}"/>
+				<ContentControl Grid.Row="3" Grid.Column="2" Content="{Binding InputButtons[8]}"/>
+				<ContentControl Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Content="{Binding InputButtons[9]}"/>
+				<ContentControl Grid.Row="4" Grid.Column="2" Content="{Binding InputButtons[10]}"/>
+
+				<Grid Grid.Row="1" Grid.Column="3" Grid.RowSpan="2">
+					<Grid.RowDefinitions>
+						<RowDefinition />
+						<RowDefinition />
+						<RowDefinition />
+						<RowDefinition />
+					</Grid.RowDefinitions>
+
+					<ContentControl Grid.Row="0" Content="{Binding OperatorButtons[0]}"/>
+					<ContentControl Grid.Row="1" Content="{Binding OperatorButtons[1]}"/>
+					<ContentControl Grid.Row="2" Content="{Binding OperatorButtons[2]}"/>
+					<ContentControl Grid.Row="3" Content="{Binding OperatorButtons[3]}"/>
+				</Grid>
+
+				<ContentControl Grid.Row="3" Grid.Column="3" Grid.RowSpan="2" Content="{Binding OperatorButtons[4]}"/>
+			</Grid>
+		</Grid>
+	</DataTemplate>
+</ResourceDictionary>
